@@ -10,10 +10,6 @@ function DashboardPage() {
   const [categoryData, setCategoryData] = useState([])
   const [urgencyData, setUrgencyData] = useState({ High: 0, Medium: 0, Low: 0 })
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
-
   const loadDashboardData = () => {
     const history = JSON.parse(localStorage.getItem('triageHistory') || '[]')
     const today = new Date().toDateString()
@@ -46,6 +42,10 @@ function DashboardPage() {
     })
     setUrgencyData(urgency)
   }
+
+  useEffect(() => {
+    loadDashboardData()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

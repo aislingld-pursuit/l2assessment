@@ -20,7 +20,7 @@ function HomePage() {
 
     // Get recent 3 items
     setRecentActivity(history.slice(-3).reverse())
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
