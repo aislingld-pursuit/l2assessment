@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react'
-import ReactMarkdown from 'react-markdown'
 
 function HistoryPage() {
   const [history, setHistory] = useState([])
-  const [filter, setFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [urgencyFilter, setUrgencyFilter] = useState('all')
   const [expandedIndex, setExpandedIndex] = useState(null)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    const savedHistory = JSON.parse(localStorage.getItem('triageHistory') || '[]')
-    setHistory(savedHistory) // eslint-disable-line react-hooks/set-state-in-effect
+    try {
+      const savedHistory = JSON.parse(localStorage.getItem('triageHistory') || '[]')
+      setHistory(savedHistory)
+    } catch (error) {
+      console.error('Error loading history:', error)
+      setHistory([])
+    }
   }, [])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const clearHistory = () => {
     if (window.confirm('Are you sure you want to clear all history?')) {
@@ -22,11 +29,14 @@ function HistoryPage() {
     a.message.localeCompare(b.message)
   )
   
-  const filteredHistory = filter === 'all' 
-    ? sortedHistory 
-    : sortedHistory.filter(item => item.category === filter)
+  const filteredHistory = sortedHistory.filter(item => {
+    const categoryMatch = categoryFilter === 'all' || item.category === categoryFilter
+    const urgencyMatch = urgencyFilter === 'all' || item.urgency === urgencyFilter
+    return categoryMatch && urgencyMatch
+  })
 
-  const categories = [...new Set(history.map(item => item.category))]
+  const categories = [...new Set(history.map(item => item.category).filter(Boolean))]
+  const urgencies = ['High', 'Medium', 'Low']
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -49,36 +59,82 @@ function HistoryPage() {
 
           {/* Filter Buttons */}
           {history.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg font-semibold ${
-                  filter === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                All ({history.length})
-              </button>
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setFilter(category)}
-                  className={`px-4 py-2 rounded-lg font-semibold ${
-                    filter === category
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {category} ({history.filter(h => h.category === category).length})
-                </button>
-              ))}
+            <div className="space-y-4 mb-6">
+              {/* Category Filters */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Filter by Category:</h3>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setCategoryFilter('all')}
+                    className={`px-4 py-2 rounded-lg font-semibold ${
+                      categoryFilter === 'all'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Categories ({history.length})
+                  </button>
+                  {categories.map(category => {
+                    const count = history.filter(h => h.category === category).length
+                    return (
+                      <button
+                        key={category}
+                        onClick={() => setCategoryFilter(category)}
+                        className={`px-4 py-2 rounded-lg font-semibold ${
+                          categoryFilter === category
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {category} ({count})
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Urgency Filters */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Filter by Urgency:</h3>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setUrgencyFilter('all')}
+                    className={`px-4 py-2 rounded-lg font-semibold ${
+                      urgencyFilter === 'all'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Urgencies ({history.length})
+                  </button>
+                  {urgencies.map(urgency => {
+                    const count = history.filter(h => h.urgency === urgency).length
+                    return (
+                      <button
+                        key={urgency}
+                        onClick={() => setUrgencyFilter(urgency)}
+                        className={`px-4 py-2 rounded-lg font-semibold ${
+                          urgencyFilter === urgency
+                            ? urgency === 'High' ? 'bg-red-600 text-white' :
+                              urgency === 'Medium' ? 'bg-yellow-600 text-white' :
+                              'bg-green-600 text-white'
+                            : urgency === 'High' ? 'bg-red-100 text-red-700 hover:bg-red-200' :
+                              urgency === 'Medium' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' :
+                              'bg-green-100 text-green-700 hover:bg-green-200'
+                        }`}
+                      >
+                        {urgency} Urgency ({count})
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>
 
         {/* History List */}
-        {filteredHistory.length === 0 && (
+        {filteredHistory.length === 0 && history.length === 0 && (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <div className="text-5xl mb-4">📭</div>
             <div className="text-xl text-gray-600 mb-2">No history yet</div>
@@ -91,6 +147,25 @@ function HistoryPage() {
             >
               Analyze a Message
             </a>
+          </div>
+        )}
+
+        {filteredHistory.length === 0 && history.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+            <div className="text-3xl mb-4">🔍</div>
+            <div className="text-xl text-gray-600 mb-2">No results match your filters</div>
+            <p className="text-gray-500 mb-6">
+              Try adjusting your category or urgency filters
+            </p>
+            <button
+              onClick={() => {
+                setCategoryFilter('all')
+                setUrgencyFilter('all')
+              }}
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold"
+            >
+              Clear Filters
+            </button>
           </div>
         )}
 
@@ -150,9 +225,7 @@ function HistoryPage() {
                       <div className="text-xs font-semibold text-gray-600 mb-1">AI Reasoning</div>
                       <div className="bg-white p-3 rounded border border-gray-200">
                         <div className="prose prose-sm max-w-none text-gray-700">
-                          <ReactMarkdown>
-                            {item.reasoning}
-                          </ReactMarkdown>
+                          <pre className="whitespace-pre-wrap font-sans">{item.reasoning}</pre>
                         </div>
                       </div>
                     </div>
