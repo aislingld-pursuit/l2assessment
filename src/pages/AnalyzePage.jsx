@@ -54,7 +54,7 @@ function AnalyzePage() {
       localStorage.setItem('triageHistory', JSON.stringify(history))
     } catch (error) {
       console.error('Error analyzing message:', error)
-      alert('Error analyzing message. Please try again.')
+      alert('Error analyzing message. Please check your API key setup.')
     } finally {
       setIsLoading(false)
     }

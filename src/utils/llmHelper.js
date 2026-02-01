@@ -6,10 +6,10 @@ import Groq from 'groq-sdk';
  */
 
 // Initialize Groq client
-const groq = new Groq({
+const groq = import.meta.env.VITE_GROQ_API_KEY ? new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true // Required for browser-based calls (not recommended for production!)
-});
+}) : null;
 
 /**
  * Categorize a customer support message using Groq AI
@@ -18,6 +18,10 @@ const groq = new Groq({
  * @returns {Promise<{category: string, reasoning: string}>}
  */
 export async function categorizeMessage(message) {
+  if (!groq) {
+    throw new Error('Groq API key not configured. Please set VITE_GROQ_API_KEY in your .env.local file.')
+  }
+  
   try {
     const response = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",

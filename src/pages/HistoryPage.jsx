@@ -7,13 +7,9 @@ function HistoryPage() {
   const [expandedIndex, setExpandedIndex] = useState(null)
 
   useEffect(() => {
-    loadHistory()
-  }, [])
-
-  const loadHistory = () => {
     const savedHistory = JSON.parse(localStorage.getItem('triageHistory') || '[]')
-    setHistory(savedHistory)
-  }
+    setHistory(savedHistory) // eslint-disable-line react-hooks/set-state-in-effect
+  }, [])
 
   const clearHistory = () => {
     if (window.confirm('Are you sure you want to clear all history?')) {
