@@ -1,0 +1,58 @@
+================================================================================
+VIDEO SCRIPT — Relay AI Triage Improvements
+Week 2 Baseline Assessment — Professional
+Target length: ~2:00 (about 300 words at a calm pace)
+Deliverable: Loom video, share set to "Anyone with link can view"
+================================================================================
+
+
+[0:00 — OPEN]
+Hi — I want to walk you through what I found in the Customer Inbox Triage tool
+and what I changed.
+
+[0:10 — WHAT IT'S FOR]
+The tool exists to do one thing: read every incoming customer message and
+instantly decide how urgent it is, what it's about, and what the agent should do
+next — so small teams can handle more volume without hiring.
+
+[0:25 — WHAT I DISCOVERED]
+When I tested it, the prioritization was backwards. It judged urgency by
+punctuation and message length, not meaning. So "Server down now" — a real
+emergency — got marked LOW and buried, while a cheerful "Thank you!" got marked
+HIGH and jumped the queue. Categories also changed run to run, some recommended
+actions were just wrong, and when the AI failed, the tool quietly showed a fake
+answer as if it were real.
+
+[0:50 — WHAT I FIXED]
+I went after the highest-impact problem first: urgency. I rebuilt it to read
+meaning — signals like "outage," "can't access," or "payment failed" now drive
+priority. I locked categories to a consistent set, flagged urgent tickets for
+escalation, and made the tool honest when the AI is down.
+
+[1:15 — USER + BUSINESS VALUE]
+For users, real fires get seen first and agents stop wasting time on the wrong
+tickets. For the business, it protects the core promise: fewer missed
+emergencies, fewer breached response times, more throughput per agent — without
+new headcount.
+
+[1:35 — TRADEOFF / LIMITATION]
+One honest limitation: my urgency engine is keyword-based. It's fast, free, and
+predictable — but a truly urgent message worded in a way I didn't anticipate
+could still slip through as low priority. I built the rules to be easy to expand
+so we can close those gaps quickly.
+
+[1:50 — WHAT'S NEXT]
+Next, I'd let the AI itself score urgency so it generalizes beyond keywords, add
+per-customer tuning, and move the API key to a secure backend for production.
+Thanks.
+
+
+--------------------------------------------------------------------------------
+DELIVERY TIPS
+--------------------------------------------------------------------------------
+  - Practice once for timing; aim for 1:55 - 2:05.
+  - Pause at each section break.
+  - Look at the camera lens, not the screen.
+  - The "Server down -> Low" example is your hook — land it slowly.
+  - Record in Loom; set share to "Anyone with link can view."
+================================================================================

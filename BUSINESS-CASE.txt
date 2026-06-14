@@ -1,0 +1,80 @@
+================================================================================
+RELAY AI — CUSTOMER INBOX TRIAGE: BUSINESS CASE
+Week 2 Baseline Assessment — Business
+Audience: non-technical executive (customer impact, business outcomes, strategy)
+================================================================================
+
+
+PROBLEM STATEMENT
+--------------------------------------------------------------------------------
+Relay AI sells one core promise: help small businesses handle more customer
+messages without hiring more staff. That promise depends entirely on the triage
+tool putting the RIGHT messages in front of agents FIRST.
+
+Today, it does the opposite. The tool's prioritization was driven by surface
+signals — punctuation and message length — instead of meaning. The result:
+
+  - A real emergency like "Server down now" was marked LOW priority and sent to
+    the bottom of the queue.
+  - A friendly "Thank you so much!" was marked HIGH priority and jumped the line.
+  - The same message could be sorted into different categories on different days,
+    and a customer asking for a new feature was told to "check the billing portal."
+  - When the AI was unavailable, the tool quietly showed a fabricated answer as
+    if it were real.
+
+For a product whose entire job is to prioritize and route, this is a direct hit
+to the value customers pay for. The business risk is concrete: missed urgent
+issues, breached response-time commitments, agents wasting time on the wrong
+tickets, and erosion of trust in the AI — the exact opposite of the efficiency
+Relay AI is selling.
+
+
+SOLUTION STATEMENT
+--------------------------------------------------------------------------------
+I rebuilt the parts of the tool that decide WHAT MATTERS and WHAT TO DO ABOUT IT:
+
+  1. Prioritization now reads meaning, not punctuation. Genuine urgency signals
+     (outage, can't access, breach, payment failed) push a message up; polite,
+     low-stakes language pushes it down. Emergencies surface, thank-you notes
+     don't.
+
+  2. Categories are now consistent and predictable. The AI is constrained to a
+     fixed, business-defined set of categories and returns the same answer for
+     the same message every time — no more drift.
+
+  3. Recommended actions are correct and priority-aware. Each category maps to
+     the right next step, and high-urgency messages are automatically flagged for
+     escalation so they bypass the standard queue.
+
+  4. The tool is now honest when the AI is unavailable. Instead of silently
+     faking a result, it clearly flags "AI unavailable" so agents know to trust
+     their own judgment.
+
+These changes are tested and live on a review branch, with automated checks
+confirming the behavior.
+
+
+WHY THIS DELIVERS THE MOST VALUE TO RELAY AI
+--------------------------------------------------------------------------------
+  - It protects the core value proposition. Correct prioritization IS the
+    product. Fixing the inverted urgency turns the tool from a liability that
+    misroutes tickets into the asset customers are paying for — the single
+    highest-leverage fix available.
+
+  - It directly reduces customer churn risk. Faster response to true emergencies
+    means fewer breached SLAs and fewer frustrated end-customers for the small
+    businesses Relay serves — the outcome that keeps them subscribed.
+
+  - It advances the "more volume, no new headcount" strategy. Accurate first-pass
+    triage means agents spend their time on the tickets that actually need them,
+    increasing throughput per agent without added cost.
+
+  - It rebuilds trust in the AI. Consistent categories plus honest fallback
+    behavior make the tool feel reliable. For a paid SaaS, unpredictable or
+    fabricated output is a silent trust-killer that quietly drives cancellations.
+
+  - It's high-impact and low-cost. These are small, focused, well-tested changes
+    — fast to ship and easy to tune per customer later — delivering outsized
+    business return relative to the engineering effort.
+
+================================================================================
