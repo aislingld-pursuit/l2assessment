@@ -151,9 +151,12 @@ Note: `npm run lint` across the whole repo still reports pre-existing
 
 ## 5. Delivery
 
-- Committed and pushed to the **fork** (`jp-bmn/l2assessment`, remote
-  `github-desktop-jp-bmn`), branch `pr/2`. **Not** pushed to the company
-  upstream (`origin` = `jimenezatmit/l2assessment`).
+- Committed and pushed to **my own fork** (`aislingld-pursuit/l2assessment`,
+  remote `aisling`), branch **`aisling/triage-fixes`**.
+- **Not** pushed to the company upstream (`origin` = `jimenezatmit/l2assessment`)
+  nor to `jp-bmn/l2assessment` (the clone's pre-existing fork remote — no write
+  access from this account).
 - Date: 2026-06-14.
 - Includes `package.json` (`npm test` script) and a `package-lock.json`
   normalization (only `"peer": true` metadata, from `npm install`).
+- Open a PR: https://github.com/aislingld-pursuit/l2assessment/pull/new/aisling/triage-fixes
