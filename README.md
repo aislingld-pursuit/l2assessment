@@ -14,6 +14,15 @@ Support teams waste time manually reading and triaging customer messages. This t
 - **AI**: Groq API (Llama 3.3 70B - Free tier)
 - **Runtime**: Browser-based (local development only)
 
+## Recent Improvements (Week 8 Assessment)
+
+The following improvements were made to address major flaws in the original triage logic:
+1. **Unified LLM Request (JSON Mode):** Replaced fragile keyword matching in `llmHelper.js` with structured JSON output from Groq's API, asking the LLM for both category and urgency in one pass.
+2. **Dynamic Urgency Scoring:** Removed the hardcoded, rule-based urgency scoring (which penalized short urgent messages like "Server down") and now use the LLM's intelligent urgency determination. Added validation to prevent processing overly short/empty messages (e.g. "hi").
+3. **Corrected Action Templates:** Fixed a bug in `templates.js` where Feature Requests incorrectly told the user to check their billing portal instead of logging the request for the product team.
+
+*(The full IDE interaction leading to these improvements is available in [IDE_CONVERSATION.md](./IDE_CONVERSATION.md))*
+
 ## Setup Instructions
 
 ### Prerequisites
