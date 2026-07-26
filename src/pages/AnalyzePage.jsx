@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { categorizeMessage } from '../utils/llmHelper'
-import { calculateUrgency } from '../utils/urgencyScorer'
 import { getRecommendedAction } from '../utils/templates'
 
 function AnalyzePage() {
@@ -19,8 +18,14 @@ function AnalyzePage() {
   }, [])
 
   const handleAnalyze = async () => {
-    if (!message.trim()) {
+    // Basic validation
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
       alert('Please enter a message to analyze')
+      return
+    }
+    if (trimmedMessage.length < 10) {
+      alert('Please enter a more descriptive message (at least 10 characters).')
       return
     }
 
@@ -28,11 +33,8 @@ function AnalyzePage() {
     setResults(null)
     
     try {
-      // Run categorization (LLM call)
-      const { category, reasoning } = await categorizeMessage(message)
-      
-      // Calculate urgency (rule-based)
-      const urgency = calculateUrgency(message)
+      // Run categorization and urgency mapping (LLM call)
+      const { category, reasoning, urgency } = await categorizeMessage(message)
       
       // Get recommended action (template-based)
       const recommendedAction = getRecommendedAction(category)

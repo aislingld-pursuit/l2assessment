@@ -6,7 +6,7 @@ const actionTemplates = {
   "Billing Issue": "Ask user to check billing portal.",
   "Technical Problem": "Suggest user to restart their browser.",
   "General Inquiry": "Respond with FAQ link.",
-  "Feature Request": "Ask user to check billing portal.",
+  "Feature Request": "Log feature request for the product team.",
   "Unknown": "Review manually."
 }
 

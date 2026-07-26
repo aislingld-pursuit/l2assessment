@@ -15,7 +15,7 @@ const groq = new Groq({
  * Categorize a customer support message using Groq AI
  * 
  * @param {string} message - The customer support message
- * @returns {Promise<{category: string, reasoning: string}>}
+ * @returns {Promise<{category: string, reasoning: string, urgency: string}>}
  */
 export async function categorizeMessage(message) {
   try {
@@ -23,32 +23,29 @@ export async function categorizeMessage(message) {
       model: "llama-3.3-70b-versatile",
       messages: [
         {
+          role: "system",
+          content: `You are an expert customer support triage AI. 
+Categorize the customer's message into one of these categories: "Billing Issue", "Technical Problem", "Feature Request", "General Inquiry".
+Also determine the urgency of the message: "High", "Medium", or "Low". 
+Analyze the real context, e.g. "Server down" is High, simple questions are Low.
+Output your response as a strict JSON object with three keys: "category", "urgency", and "reasoning".`
+        },
+        {
           role: "user",
-          content: `Categorize this customer support message: ${message}`
+          content: message
         }
       ],
-      temperature: 0.7,
+      temperature: 0.1,
+      response_format: { type: "json_object" }
     });
 
     const content = response.choices[0].message.content;
-    
-    const lines = content.split('\n');
-    let category = "Unknown";
-    let reasoning = content;
-    
-    if (content.toLowerCase().includes('billing')) {
-      category = "Billing Issue";
-    } else if (content.toLowerCase().includes('technical') || content.toLowerCase().includes('bug')) {
-      category = "Technical Problem";
-    } else if (content.toLowerCase().includes('feature')) {
-      category = "Feature Request";
-    } else if (content.toLowerCase().includes('inquiry') || content.toLowerCase().includes('question')) {
-      category = "General Inquiry";
-    }
+    const parsed = JSON.parse(content);
     
     return {
-      category,
-      reasoning: content
+      category: parsed.category || "Unknown",
+      urgency: parsed.urgency || "Medium",
+      reasoning: parsed.reasoning || content
     };
   } catch (error) {
     console.warn('Groq API failed, using mock response:', error.message);
@@ -100,14 +97,24 @@ function getMockCategorization(message) {
     const reasons = reasoningVariations[category];
     return reasons[Math.floor(Math.random() * reasons.length)];
   };
+
+  // Helper to get mock urgency based on keywords
+  const getUrgency = () => {
+    if (lowerMessage.includes('down') || lowerMessage.includes('crash') || lowerMessage.includes('urgent') || lowerMessage.includes('emergency')) return "High";
+    if (lowerMessage.includes('feature') || lowerMessage.includes('thank') || lowerMessage.includes('hi') || lowerMessage.includes('how')) return "Low";
+    return "Medium";
+  };
   
+  const mockUrgency = getUrgency();
+
   // Billing-related detection
   if (lowerMessage.includes('bill') || lowerMessage.includes('payment') || 
       lowerMessage.includes('charge') || lowerMessage.includes('invoice') ||
       lowerMessage.includes('credit card') || lowerMessage.includes('subscription') ||
-      lowerMessage.includes('refund') || lowerMessage.includes('cancel') && lowerMessage.includes('account')) {
+      lowerMessage.includes('refund') || (lowerMessage.includes('cancel') && lowerMessage.includes('account'))) {
     return {
       category: "Billing Issue",
+      urgency: mockUrgency,
       reasoning: getRandomReasoning('billing')
     };
   }
@@ -118,21 +125,23 @@ function getMockCategorization(message) {
       lowerMessage.includes('crash') || lowerMessage.includes('down') || 
       lowerMessage.includes('server') || lowerMessage.includes('loading') ||
       lowerMessage.includes('slow') || lowerMessage.includes('issue') ||
-      lowerMessage.includes('problem') && !lowerMessage.includes('no problem')) {
+      (lowerMessage.includes('problem') && !lowerMessage.includes('no problem'))) {
     return {
       category: "Technical Problem",
+      urgency: mockUrgency,
       reasoning: getRandomReasoning('technical')
     };
   }
   
   // Feature request detection
-  if (lowerMessage.includes('feature') || lowerMessage.includes('add') && (lowerMessage.includes('please') || lowerMessage.includes('could')) ||
+  if (lowerMessage.includes('feature') || (lowerMessage.includes('add') && (lowerMessage.includes('please') || lowerMessage.includes('could'))) ||
       lowerMessage.includes('improve') || lowerMessage.includes('would like to see') ||
       lowerMessage.includes('suggestion') || lowerMessage.includes('wish') ||
-      lowerMessage.includes('could you') && lowerMessage.includes('add') ||
+      (lowerMessage.includes('could you') && lowerMessage.includes('add')) ||
       lowerMessage.includes('enhancement') || lowerMessage.includes('would be great')) {
     return {
       category: "Feature Request",
+      urgency: mockUrgency,
       reasoning: getRandomReasoning('feature')
     };
   }
@@ -142,6 +151,7 @@ function getMockCategorization(message) {
       !lowerMessage.includes('but') && !lowerMessage.includes('however')) {
     return {
       category: "General Inquiry",
+      urgency: "Low",
       reasoning: getRandomReasoning('positive')
     };
   }
@@ -153,6 +163,7 @@ function getMockCategorization(message) {
       lowerMessage.includes('?')) {
     return {
       category: "General Inquiry",
+      urgency: mockUrgency,
       reasoning: getRandomReasoning('inquiry')
     };
   }
@@ -160,6 +171,7 @@ function getMockCategorization(message) {
   // Fallback for ambiguous messages
   return {
     category: "General Inquiry",
+    urgency: mockUrgency,
     reasoning: getRandomReasoning('ambiguous')
   };
 }
